@@ -1,8 +1,9 @@
-# Kubernetes Deployment Process
+Here's the Kubernetes command line session you've shared, formatted in Markdown for better readability:
 
-## Deployment Configuration
+```markdown
+# Kubernetes Command Line Session
 
-### `deployment1.yml`
+## Create Deployment YAML
 
 ```yaml
 apiVersion: apps/v1
@@ -44,66 +45,127 @@ spec:
 
 ## Commands Executed
 
-1. **Apply the Deployment:**
-   ```bash
-   kubectl apply -f deployment1.yml
-   ```
-
-2. **Get the List of Pods:**
-   ```bash
-   kubectl get pod
-   ```
-
-3. **Check All Resources:**
-   ```bash
-   kubectl get all
-   ```
-
-4. **Execute a Command in a Pod:**
-   ```bash
-   kubectl exec -it testpod1-75b54d87bf-4k7nx /bin/bash
-   ```
-
-5. **Expose the Deployment:**
-   ```bash
-   kubectl expose deployment testpod1 --name svc --port 8000 --target-port 80 --type NodePort
-   kubectl expose deployment testpod1 --name svc2 --port 5000 --target-port 5000 --type NodePort
-   ```
-
-6. **Describe the Service:**
-   ```bash
-   kubectl describe svc svc
-   ```
-
-7. **Dry Run for New Service:**
-   ```bash
-   kubectl expose deployment testpod1 --name svc3 --port 8000 --target-port 80 --type NodePort --dry-run=client -o yaml
-   ```
-
-8. **Delete the Deployment:**
-   ```bash
-   kubectl delete deployment testpod1
-   ```
-
-9. **Reapply the Deployment:**
-   ```bash
-   kubectl apply -f deployment1.yml
-   ```
-
-## Status Check
-
-### All Resources After Deployment
 ```bash
+# Apply the deployment
+kubectl apply -f deployment1.yml 
+# Output: error parsing deployment1.yml: error converting YAML to JSON: yaml: line 29: mapping values are not allowed in this context
+
+# Delete the deployment
+kubectl delete deployment deployment1.yml 
+# Output: Error from server (NotFound): deployments.apps "deployment1.yml" not found
+
+# Delete the existing deployment
+kubectl delete deployment testpod1       
+# Output: deployment.apps "testpod1" deleted
+
+# Apply the deployment again
+kubectl apply -f deployment1.yml         
+# Output: error parsing deployment1.yml: error converting YAML to JSON: yaml: line 29: mapping values are not allowed in this context
+
+# Display the content of the deployment YAML
+cat deployment1.yml             
+# Output: [YAML Content]
+
+# Edit the deployment YAML
+vi deployment1.yml 
+
+# Apply the corrected deployment
+kubectl apply -f deployment1.yml
+# Output: deployment.apps/testpod1 created
+
+# Get the list of pods
+kubectl get pod
+# Output: 
+# NAME                        READY   STATUS              RESTARTS   AGE
+# testpod1-75b54d87bf-4k7nx   0/2     ContainerCreating   0          7s
+# ...
+
+# Get all resources
 kubectl get all
+# Output: 
+# NAME                            READY   STATUS              RESTARTS   AGE
+# pod/testpod1-75b54d87bf-4k7nx   0/2     ContainerCreating   0          13s
+# ...
+
+# Execute a command in a pod
+kubectl exec -it testpod1-75b54d87bf-4k7nx
+# Output: error: you must specify at least one command for the container
+
+# Execute a command in a pod with the specified container
+kubectl exec -it testpod1-75b54d87bf-4k7nx -- /bin/bash
+# Output: Defaulted container "kubegame" out of: kubegame, mysqldb
+
+# Display environment variables in the container
+root@testpod1-75b54d87bf-4k7nx:/# env
+# Output: [Environment Variables]
+
+# Exit the container
+exit
+
+# Expose the deployment as a service
+kubectl expose deployment testpod1 --name svc --port 8000 --target-port 80 --type NodePort
+# Output: service/svc exposed
+
+# Expose another service
+kubectl expose deployment testpod1 --name svc2 --port 5000 --target-port 5000 --type NodePort
+# Output: service/svc2 exposed
+
+# Get the list of services
+kubectl get svc
+# Output: 
+# NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+# kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP          27d
+# svc          NodePort    10.107.171.17   <none>        8000:30785/TCP   93s
+# svc2         NodePort    10.103.80.169   <none>        5000:31218/TCP   12s
+
+# Describe the service
+kubectl describe svc svc
+# Output: [Service Details]
+
+# Attempt to dry-run expose service
+kubectl expose deployment testpod1 --name svc --port 8000 --target-port 80 --type NodePort --dry-run -o wide
+# Output: error: unable to match a printer suitable for the output format "wide"
+
+# Correct the dry-run command
+kubectl expose deployment testpod1 --name svc3 --port 8000 --target-port 80 --type NodePort --dry-run -o yaml
+# Output: 
+# apiVersion: v1
+# kind: Service
+# metadata:
+# ...
+
+# Get explanation for deployment strategy
+kubectl explain deployment.spec.strategy
+# Output: 
+# GROUP:      apps
+# KIND:       Deployment
+# VERSION:    v1
+# FIELD: strategy <DeploymentStrategy>
+# ...
+
+# Delete the deployment again
+kubectl delete deployment testpod1
+# Output: deployment.apps "testpod1" deleted
+
+# Apply the deployment once more
+kubectl apply -f deployment1.yml 
+# Output: deployment.apps/testpod1 created
+
+# Get all resources again
+kubectl get all                         
+# Output: 
+# NAME                            READY   STATUS        RESTARTS   AGE
+# pod/testpod1-75b54d87bf-47hr5   2/2     Running       0          8s
+# ...
+
+# Get the list of pods
+kubectl get pods
+# Output: 
+# NAME                        READY   STATUS    RESTARTS   AGE
+# testpod1-75b54d87bf-47hr5   2/2     Running   0          53s
+# ...
 ```
 
-## Explanation of Deployment Strategy
+---
 
-- **Deployment Strategy:**
-  - `RollingUpdate`: Replaces old pods gradually.
-  - `Recreate`: Kills all existing pods before creating new ones.
-
-## Conclusion
-
-The deployment was successfully created, and the services were exposed as intended.
-```
+This format organizes your session into sections, making it easier to read and reference specific commands and outputs.
